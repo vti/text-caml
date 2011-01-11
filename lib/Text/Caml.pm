@@ -10,8 +10,8 @@ our $VERSION = '0.000001';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
-our $START_TAG      = qr/{{/x;
-our $END_TAG        = qr/}}/x;
+our $START_TAG      = qr/{/x;
+our $END_TAG        = qr/}/x;
 
 our $START_OF_PARTIAL          = quotemeta '>';
 our $START_OF_SECTION          = quotemeta '#';
@@ -171,14 +171,13 @@ sub _render_tag {
 
         $value = $context->{$name};
     }
-    else {
-        ($name, %args) = $self->_parse_name($context, $name);
 
+    else {
         $value = $self->_get_value($context, $name);
     }
 
     if (ref $value eq 'CODE') {
-        my $content = $value->($self, '', {%args});
+        my $content = $value->($self, '', $context);
         $content = '' unless defined $content;
         return $self->render($content, $context);
     }
@@ -204,28 +203,6 @@ sub _get_value {
     }
 
     return $value;
-}
-
-sub _parse_name {
-    my $self    = shift;
-    my $context = shift;
-    my $name    = shift;
-
-    my @pairs;
-    ($name, @pairs) = split ' ' => $name;
-
-    my %args = map { split '=' } @pairs;
-    foreach my $key (keys %args) {
-        my $value = $args{$key};
-        if ($value =~ s/\A"(.*)"\z/$1/) {
-            $args{$key} = $value;
-        }
-        else {
-            $args{$key} = exists $context->{$value} ? $context->{$value} : '';
-        }
-    }
-
-    return ($name, %args);
 }
 
 sub _render_tag_escaped {

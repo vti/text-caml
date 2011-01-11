@@ -7,35 +7,35 @@ use Text::Caml;
 
 my $renderer = Text::Caml->new;
 
-my $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 1});
+my $output = $renderer->render('{#bool}Hello{/bool}', {bool => 1});
 is $output => 'Hello';
 
-$output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 0});
+$output = $renderer->render('{#bool}Hello{/bool}', {bool => 0});
 is $output => '';
 
-$output = $renderer->render("{{#bool}}\nHello\n{{/bool}}", {bool => 0});
-is $output => '';
-
-$output =
-  $renderer->render("{{#bool}}\nHello\n{{/bool}}\n{{unknown}}", {bool => 0});
+$output = $renderer->render("{#bool}\nHello\n{/bool}", {bool => 0});
 is $output => '';
 
 $output =
-  $renderer->render('{{#list}}{{n}}{{/list}}',
+  $renderer->render("{#bool}\nHello\n{/bool}\n{unknown}", {bool => 0});
+is $output => '';
+
+$output =
+  $renderer->render('{#list}{n}{/list}',
     {list => [{n => 1}, {n => 2}, {n => 3}]});
 is $output => '123';
 
-$output = $renderer->render('{{#list}}{{.}}{{/list}}', {list => [1, 2, 3]});
+$output = $renderer->render('{#list}{.}{/list}', {list => [1, 2, 3]});
 is $output => '123';
 
-$output = $renderer->render('{{#foo.list}}{{.}}{{/foo.list}}',
+$output = $renderer->render('{#foo.list}{.}{/foo.list}',
     {foo => {list => [1, 2, 3]}});
 is $output => '123';
 
-$output = $renderer->render('{{#list}}{{n}}{{/list}}', {list => []});
+$output = $renderer->render('{#list}{n}{/list}', {list => []});
 is $output => '';
 
 $output =
-  $renderer->render('{{#s}}one{{/s}} {{#s}}{{two}}{{/s}} {{#s}}three{{/s}}',
+  $renderer->render('{#s}one{/s} {#s}{two}{/s} {#s}three{/s}',
     {s => 1, two => 'two'});
 is $output => 'one two three';

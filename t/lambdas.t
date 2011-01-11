@@ -8,37 +8,37 @@ use Text::Caml;
 my $renderer = Text::Caml->new;
 
 my $output = $renderer->render(
-    '{{lamda}}',
+    '{lamda}',
     {   lamda => sub { }
     }
 );
 is $output => '';
 
 $output = $renderer->render(
-    '{{lamda}}',
+    '{lamda}',
     {   lamda => sub {0}
     }
 );
 is $output => '0';
 
 $output = $renderer->render(
-    '{{lamda}}',
+    '{lamda}',
     {   lamda => sub {'text'}
     }
 );
 is $output => 'text';
 
 $output = $renderer->render(
-    '{{lamda}}',
-    {   lamda => sub {'{{var}}'},
+    '{lamda}',
+    {   lamda => sub {'{var}'},
         var   => 'text'
     }
 );
 is $output => 'text';
 
 $output = $renderer->render(
-    '{{#lamda}}Hello{{/lamda}}',
-    {   lamda => sub {'{{var}}'},
+    '{#lamda}Hello{/lamda}',
+    {   lamda => sub {'{var}'},
         var   => 'text'
     }
 );
@@ -52,8 +52,8 @@ my $wrapped = sub {
 };
 
 $output = $renderer->render(<<'EOF', {name => 'Willy', wrapped => $wrapped});
-{{#wrapped}}
-{{name}} is awesome.
-{{/wrapped}}
+{#wrapped}
+{name} is awesome.
+{/wrapped}
 EOF
 is $output => "<b>Willy is awesome.</b>";
