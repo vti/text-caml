@@ -250,8 +250,20 @@ sub _render_section {
         $output .= $self->render($template, $value);
     }
     elsif (ref $value eq 'ARRAY') {
+        my $idx = 0;
         foreach my $el (@$value) {
-            $output .= $self->render($template, ref $el ? $el : {'.' => $el});
+            my $context = ref $el ? $el : {'.' => $el};
+            $context->{'_idx'} = $idx;
+
+            $context->{'_even'} = $idx % 2 == 0;
+            $context->{'_odd'}  = $idx % 2 != 0;
+
+            $context->{'_first'} = $idx == 0;
+            $context->{'_last'}  = $idx == $#$value;
+
+            $output .= $self->render($template, $context);
+
+            $idx++;
         }
     }
     elsif (ref $value eq 'CODE') {
