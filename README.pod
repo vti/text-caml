@@ -12,10 +12,10 @@ That means it tends to have no logic in template files.
     # template
     <html>
         <head>
-            <title>{{title}}</title>
+            <title>{title}</title>
         </head>
         <body>
-            {{body}}
+            {body}
         </body>
     </html>
 
@@ -28,23 +28,23 @@ rendering and be specific in various cases.
 
 =head3 Variables
 
-Variables are inserted using C<{{foo}}> syntax. If a variable is not defined or
+Variables are inserted using C<{foo}> syntax. If a variable is not defined or
 empty it is simply ignored.
 
-    Hello {{user}}!
+    Hello {user}!
 
 By default every variable is escaped when parsed. This can be omitted using C<&>
 flag.
 
     # user is '1 > 2'
-    Hello {{user}}! => Hello 1 &gt; 2!
+    Hello {user}! => Hello 1 &gt; 2!
 
-    Hello {{&user}}! => Hello 1 > 2!
+    Hello {&user}! => Hello 1 > 2!
 
 Using a C<.> syntax it is possible to access deep hash structures.
 
     # user => {name => 'Larry'}
-    {{user.name}}
+    {user.name}
 
     Larry
 
@@ -52,11 +52,11 @@ Using a C<.> syntax it is possible to access deep hash structures.
 
 Comments are ignored. They can be multiline too.
 
-  foo{{! Comment}}bar
+  foo{! Comment}bar
 
-  foo{{!
+  foo{!
   Comment
-  }}bar
+  }bar
 
 =head3 Sections
 
@@ -70,19 +70,19 @@ variable type different iterators are created.
 Boolean, C<have_comments> is defined, not zero and not empty.
 
     # have_comments => 1
-    {{#have_comments}}
+    {#have_comments}
     We have comments!
-    {{/have_comments}}
+    {/have_comments}
 
     We have comments!
 
 =item *
 
-Array, C<list> is a non-empty array reference. Special variable C<{{.}}> is
+Array, C<list> is a non-empty array reference. Special variable C<{.}> is
 created to point to the current element.
 
     # list => [1, 2, 3]
-    {{#list}}{{.}}{{/list}}
+    {#list}{.}{/list}
 
     123
 
@@ -92,9 +92,9 @@ Hash, C<hash> is a non-empty hash reference. Context is swithed to to the
 elements.
 
     # hash => {one => 1, two => 2, three => 3}
-    {{#hash}}
-    {{one}}{{two}}{{three}}
-    {{/hash}}
+    {#hash}
+    {one}{two}{three}
+    {/hash}
 
     123
 
@@ -111,17 +111,17 @@ for subrendering, helpers etc.
         return '<b>' . $self->render($text, @_) . '</b>';
     };
 
-    {{#wrapped}}
-    {{name}} is awesome.
-    {{/wrapped}}
+    {#wrapped}
+    {name} is awesome.
+    {/wrapped}
 
     <b>Willy is awesome.</b>
 
 It is possible to pass arguments too. They will replace context.
 
-    {{#wrapper foo="bar"}}
-    {{foo}}
-    {{/wrapper}}
+    {#wrapper foo="bar"}
+    {foo}
+    {/wrapper}
 
 =back
 
@@ -131,12 +131,12 @@ Inverted sections are run in those situations when normal sections don't. When
 boolean value is false, array is empty etc.
 
     # repo => []
-    {{#repo}}
-      <b>{{name}}</b>
-    {{/repo}}
-    {{^repo}}
+    {#repo}
+      <b>{name}</b>
+    {/repo}
+    {^repo}
       No repos :(
-    {{/repo}}
+    {/repo}
 
     No repos :(
 
@@ -145,9 +145,9 @@ boolean value is false, array is empty etc.
 Partials are like C<inludes> in other templates engines. They are run with the
 current context and can be recursive.
 
-    {{#articles}}
-    {{>article_summary}}
-    {{/articles}}
+    {#articles}
+    {>article_summary}
+    {/articles}
 
 =head3 Views
 
@@ -169,7 +169,7 @@ logic into the template.
     ...
 
     my $view = View->new(title => 'Hello!');
-    $view->render('{{title}}');
+    $view->render('{title}');
 
     Hello!
 
