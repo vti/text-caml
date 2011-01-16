@@ -81,9 +81,15 @@ sub render {
               )
             {
                 my $name = $1;
+                my $end_of_section = $name;
+
+                # Method call
+                if ($name =~ m/^\./) {
+                    $end_of_section =~ s/\(.*//;
+                }
 
                 if ($template
-                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $name $END_TAG ($TRAILING_SPACE)?/gcxms
+                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $end_of_section $END_TAG ($TRAILING_SPACE)?/gcxms
                   )
                 {
                     $chunk .= $self->_render_section($name, $1, $context);
@@ -189,6 +195,14 @@ sub _get_value {
     my $self    = shift;
     my $context = shift;
     my $name    = shift;
+
+    # Method
+    if ($name =~ s/^\.//) {
+        my $code = "do {use strict;use warnings;\$self->$name;};";
+        my $retval = eval $code;
+        Carp::croak("Error near method call: $code: $@") if $@;
+        return $retval;
+    }
 
     my @parts = split /\./ => $name;
 
