@@ -10,8 +10,8 @@ our $VERSION = '0.000001';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
-our $START_TAG      = qr/{/x;
-our $END_TAG        = qr/}/x;
+our $START_TAG      = qr/{{/x;
+our $END_TAG        = qr/}}/x;
 
 our $START_OF_PARTIAL          = quotemeta '>';
 our $START_OF_SECTION          = quotemeta '#';

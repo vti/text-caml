@@ -8,11 +8,11 @@ use Text::Caml;
 my $renderer = Text::Caml->new;
 
 my $output = $renderer->render(<<'EOF', {repo => []});
-{#repo}
-  <b>{name}</b>
-{/repo}
-{^repo}
+{{#repo}}
+  <b>{{name}}</b>
+{{/repo}}
+{{^repo}}
   No repos :(
-{/repo}
+{{/repo}}
 EOF
 is $output => '  No repos :(';

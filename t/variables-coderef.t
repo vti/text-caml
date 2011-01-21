@@ -8,7 +8,7 @@ use Text::Caml;
 my $renderer = Text::Caml->new;
 
 my $output = $renderer->render(
-    '{foo}',
+    '{{foo}}',
     {   foo => sub {'bar'}
     }
 );

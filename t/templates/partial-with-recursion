@@ -1,1 +1,1 @@
-*{>partial-with-directives}*
+*{{>partial-with-directives}}*
