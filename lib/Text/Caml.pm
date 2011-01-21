@@ -34,28 +34,17 @@ sub format { $_[0]->{format} }
 sub set_format { $_[0]->{format} = $_[1] }
 
 sub render_file {
-    my $self    = shift;
-    my $file    = shift;
-    my $context = shift;
+    my $self = shift;
+    my $file = shift;
 
     my $template = $self->_slurp_template($file);
-    return $self->render($template, $context);
+    return $self->render($template, @_);
 }
 
 sub render {
-    my $self = shift;
-
-    my $template;
-    my $context;
-
-    if (@_ == 0) {
-        $template = $self->_slurp_template($self->_class_to_template);
-        $context  = $self->to_hash;
-    }
-    else {
-        $template = shift;
-        $context  = shift;
-    }
+    my $self     = shift;
+    my $template = shift;
+    my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
 
     my $output = '';
 
@@ -80,7 +69,7 @@ sub render {
                 =~ m/\G $START_OF_SECTION (.*?) $END_TAG ($TRAILING_SPACE)?/gcxms
               )
             {
-                my $name = $1;
+                my $name           = $1;
                 my $end_of_section = $name;
 
                 # Method call
@@ -161,8 +150,6 @@ sub render {
     return $output;
 }
 
-sub to_hash { {} }
-
 sub _render_tag {
     my $self    = shift;
     my $name    = shift;
@@ -198,7 +185,7 @@ sub _get_value {
 
     # Method
     if ($name =~ s/^\.//) {
-        my $code = "do {use strict;use warnings;\$self->$name;};";
+        my $code   = "do {use strict;use warnings;\$self->$name;};";
         my $retval = eval $code;
         Carp::croak("Error near method call: $code: $@") if $@;
         return $retval;
@@ -311,42 +298,6 @@ sub _render_partial {
     my $content = $self->_slurp_template($template);
 
     return $self->render($content, $context);
-}
-
-sub _class_to_template {
-    my $self = shift;
-
-    my $class = ref $self;
-
-    my $template = $self->_decamelize($class);
-    $template .= '.' . $self->format if defined $self->format;
-
-    return $template;
-}
-
-sub _decamelize {
-    my $self   = shift;
-    my $string = shift;
-
-    my @parts;
-    foreach my $module (split '::' => $string) {
-        my @tokens = split '([A-Z])' => $module;
-        my @p;
-        foreach my $token (@tokens) {
-            next unless defined $token && $token ne '';
-
-            if ($token =~ m/[A-Z]/) {
-                push @p, lc $token;
-            }
-            else {
-                $p[-1] .= $token;
-            }
-        }
-
-        push @parts, join _ => @p;
-    }
-
-    return join '-' => @parts;
 }
 
 sub _slurp_template {
