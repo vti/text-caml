@@ -450,7 +450,7 @@ created to point to the current element.
 
 =item *
 
-Hash, C<hash> is a non-empty hash reference. Context is swithed to to the
+Hash, C<hash> is a non-empty hash reference. Context is swithed to the
 elements.
 
     # hash => {one => 1, two => 2, three => 3}
