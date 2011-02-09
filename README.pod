@@ -1,13 +1,14 @@
 
 =pod
 
-L<Text::Caml> is a Mustache-like (http://mustache.github.com/) template engine.
+L<Text::Caml> is a Mustache-like (L<http://mustache.github.com/>) template engine.
 That means it tends to have no logic in template files.
 
 =head2 Example
 
     my $view = Text::Caml->new;
-    $view->render('template', {title => 'Hello', body => 'there!'});
+
+    my $output = $view->render_file('template', {title => 'Hello', body => 'there!'});
 
     # template
     <html>
@@ -18,6 +19,8 @@ That means it tends to have no logic in template files.
             {{body}}
         </body>
     </html>
+
+    $output = $view->render('{{hello}}', {hello => 'hi'});
 
 =head2 Syntax
 

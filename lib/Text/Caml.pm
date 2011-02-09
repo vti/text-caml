@@ -6,7 +6,7 @@ use warnings;
 require Carp;
 use File::Spec;
 
-our $VERSION = '0.000001';
+our $VERSION = '0.009001';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
@@ -30,18 +30,25 @@ sub new {
 sub templates_path { $_[0]->{templates_path} }
 sub set_templates_path { $_[0]->{templates_path} = $_[1] }
 
-sub format { $_[0]->{format} }
-sub set_format { $_[0]->{format} = $_[1] }
+sub render {
+    my $self     = shift;
+    my $template = shift;
+    my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
 
-sub render_file {
-    my $self = shift;
-    my $file = shift;
+    $self->_parse($template, $context);
 
-    my $template = $self->_slurp_template($file);
-    return $self->render($template, @_);
 }
 
-sub render {
+sub render_file {
+    my $self     = shift;
+    my $template = shift;
+    my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
+
+    $template = $self->_slurp_template($template);
+    return $self->_parse($template, @_);
+}
+
+sub _parse {
     my $self     = shift;
     my $template = shift;
     my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
@@ -345,3 +352,212 @@ sub _escape {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Text::Caml - Mustache tamplate engine
+
+=head1 SYNOPSIS
+
+    my $view = Text::Caml->new;
+
+    my $output = $view->render_file('template', {title => 'Hello', body => 'there!'});
+
+    # template
+    <html>
+        <head>
+            <title>{{title}}</title>
+        </head>
+        <body>
+            {{body}}
+        </body>
+    </html>
+
+    $output = $view->render('{{hello}}', {hello => 'hi'});
+
+=head1 DESCRIPTION
+
+L<Text::Caml> is a Mustache-like (L<http://mustache.github.com/>) template engine.
+That means it tends to have no logic in template files.
+
+=head2 Syntax
+
+=head3 Context
+
+Context is the data passed to the template. Context can change during template
+rendering and be specific in various cases.
+
+=head3 Variables
+
+Variables are inserted using C<{{foo}}> syntax. If a variable is not defined or
+empty it is simply ignored.
+
+    Hello {{user}}!
+
+By default every variable is escaped when parsed. This can be omitted using C<&>
+flag.
+
+    # user is '1 > 2'
+    Hello {{user}}! => Hello 1 &gt; 2!
+
+    Hello {{&user}}! => Hello 1 > 2!
+
+Using a C<.> syntax it is possible to access deep hash structures.
+
+    # user => {name => 'Larry'}
+    {{user.name}}
+
+    Larry
+
+=head3 Comments
+
+Comments are ignored. They can be multiline too.
+
+  foo{{! Comment}}bar
+
+  foo{{!
+  Comment
+  }}bar
+
+=head3 Sections
+
+Sections are like iterators that iterate over your data. Depending on a
+variable type different iterators are created.
+
+=over 4
+
+=item *
+
+Boolean, C<have_comments> is defined, not zero and not empty.
+
+    # have_comments => 1
+    {{#have_comments}}
+    We have comments!
+    {{/have_comments}}
+
+    We have comments!
+
+=item *
+
+Array, C<list> is a non-empty array reference. Special variable C<{{.}}> is
+created to point to the current element.
+
+    # list => [1, 2, 3]
+    {{#list}}{{.}}{{/list}}
+
+    123
+
+=item *
+
+Hash, C<hash> is a non-empty hash reference. Context is swithed to to the
+elements.
+
+    # hash => {one => 1, two => 2, three => 3}
+    {{#hash}}
+    {{one}}{{two}}{{three}}
+    {{/hash}}
+
+    123
+
+=item *
+
+Lambda, C<lambda> is an anonymous subroutine, that's called with three
+arguments: current object instance, template and the context. This can be used
+for subrendering, helpers etc.
+
+    wrapped => sub {
+        my $self = shift;
+        my $text = shift;
+
+        return '<b>' . $self->render($text, @_) . '</b>';
+    };
+
+    {{#wrapped}}
+    {{name}} is awesome.
+    {{/wrapped}}
+
+    <b>Willy is awesome.</b>
+
+=back
+
+=head3 Inverted sections
+
+Inverted sections are run in those situations when normal sections don't. When
+boolean value is false, array is empty etc.
+
+    # repo => []
+    {{#repo}}
+      <b>{{name}}</b>
+    {{/repo}}
+    {{^repo}}
+      No repos :(
+    {{/repo}}
+
+    No repos :(
+
+=head3 Partials
+
+Partials are like C<inludes> in other templates engines. They are run with the
+current context and can be recursive.
+
+    {{#articles}}
+    {{>article_summary}}
+    {{/articles}}
+
+=cut
+
+=head1 ATTRIBUTES
+
+=head2 C<templates_path>
+
+  my $path = $engine->templates_path;
+
+Return path where templates are searched.
+
+=head2 C<set_templates_path>
+
+  my $path = $engine->set_templates_path('templates');
+
+Set base path under which templates are searched.
+
+=head1 METHODS
+
+=head2 C<new>
+
+  my $engine = Text::Caml->new;
+
+Create a new L<Text::Caml> object.
+
+=head2 C<render>
+
+    $engine->render('{{foo}}', {foo => 'bar'});
+
+Render template from string.
+
+=head2 C<render_file>
+
+    $engine->render_file('template.mustache', {foo => 'bar'});
+
+Render template from file.
+
+=head1 DEVELOPMENT
+
+=head2 Repository
+
+  http://github.com/vti/text-caml
+
+=head1 AUTHOR
+
+Viacheslav Tykhanovskyi, C<vti@cpan.org>
+
+=head1 CREDITS
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011, Viacheslav Tykhanovskyi
+
+This program is free software, you can redistribute it and/or modify it under
+the terms of the Artistic License version 2.0.
+
+=cut
