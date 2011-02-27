@@ -313,7 +313,7 @@ sub _slurp_template {
 
     my $path = File::Spec->catfile($self->templates_path, $template);
 
-    Carp::croak("Can't find '$template'") unless defined $path && -f $path;
+    Carp::croak("Can't find '$path'") unless defined $path && -f $path;
 
     my $content = do {
         local $/;
