@@ -6,7 +6,7 @@ use warnings;
 require Carp;
 use File::Spec;
 
-our $VERSION = '0.009001';
+our $VERSION = '0.009002';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
