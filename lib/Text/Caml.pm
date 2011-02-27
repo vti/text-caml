@@ -24,6 +24,9 @@ sub new {
     my $self = {@_};
     bless $self, $class;
 
+    $self->set_templates_path('.')
+      unless $self->templates_path;
+
     return $self;
 }
 
