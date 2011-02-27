@@ -553,6 +553,8 @@ Viacheslav Tykhanovskyi, C<vti@cpan.org>
 
 =head1 CREDITS
 
+Sergey Zasenko (und3f)
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2011, Viacheslav Tykhanovskyi
