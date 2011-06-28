@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use Text::Caml;
 
@@ -14,6 +14,14 @@ $output = $renderer->render(
     '{{#section}}{{hello}}{{/section}}',
     {   section => 'ok',
         hello   => 'bar'
+    }
+);
+is $output => 'bar';
+
+$output = $renderer->render(
+    '{{#section}}{{hello}}{{/section}}',
+    {   section => [{foo => 'bar'}],
+       hello   => 'bar'
     }
 );
 is $output => 'bar';
