@@ -193,8 +193,13 @@ sub _get_value {
     my $context = shift;
     my $name    = shift;
 
+    if ($name eq '.') {
+        return '' if $self->_is_empty($context, $name);
+        return $context->{$name};
+    }
+
     # Method
-    if ($name =~ s/^\.//) {
+    elsif ($name =~ s/^\.//) {
         my $code   = "do {use strict;use warnings;\$self->$name;};";
         my $retval = eval $code;
         Carp::croak("Error near method call: $code: $@") if $@;
@@ -249,7 +254,7 @@ sub _render_section {
     elsif (ref $value eq 'ARRAY') {
         my $idx = 0;
         foreach my $el (@$value) {
-            my $subcontext = ref $el ? $el : {'.' => $el};
+            my $subcontext = ref $el eq 'HASH' ? $el : {'.' => $el};
             $subcontext->{'_idx'} = $idx;
 
             $subcontext->{'_even'} = $idx % 2 == 0;

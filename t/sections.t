@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 use Text::Caml;
 
@@ -54,6 +54,10 @@ is $output => '1, 2, 3';
 $output = $renderer->render('{{#list}}{{.}}{{^_last}}, {{/_last}}{{/list}}',
     {list => [1, 2, 3]});
 is $output => '1, 2, 3';
+
+$output =
+  $renderer->render('{{#list}}{{#.}}{{.}}{{/.}}{{/list}}', {list => [[1], [2], [3]]});
+is $output => '123';
 
 $output =
   $renderer->render('{{#s}}one{{/s}} {{#s}}{{two}}{{/s}} {{#s}}three{{/s}}',
