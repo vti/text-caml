@@ -4,9 +4,9 @@ use strict;
 use warnings;
 
 require Carp;
-use File::Spec;
+use File::Spec ();
 
-our $VERSION = '0.009002';
+our $VERSION = '0.009003';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
@@ -319,7 +319,11 @@ sub _slurp_template {
     my $self     = shift;
     my $template = shift;
 
-    my $path = File::Spec->catfile($self->templates_path, $template);
+    my $path =
+      defined $self->templates_path
+      && !(File::Spec->file_name_is_absolute($template))
+      ? File::Spec->catfile($self->templates_path, $template)
+      : $template;
 
     Carp::croak("Can't find '$path'") unless defined $path && -f $path;
 

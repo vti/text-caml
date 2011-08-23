@@ -1,0 +1,5 @@
+Revision history for perl module Text::Caml
+
+0.00903 2011-08-22
+
+ - Fixed absolute template path rendering
