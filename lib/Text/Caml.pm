@@ -188,6 +188,23 @@ sub _render_tag {
     return $value;
 }
 
+sub _find_value {
+    my $self    = shift;
+    my $context = shift;
+    my $name    = shift;
+
+    my @parts = split /\./ => $name;
+
+    my $value = $context;
+
+    foreach my $part (@parts) {
+        return undef if $self->_is_empty($value, $part);
+        $value = $value->{$part};
+    }
+
+    return \$value;
+}
+
 sub _get_value {
     my $self    = shift;
     my $context = shift;
@@ -206,19 +223,9 @@ sub _get_value {
         return $retval;
     }
 
-    my @parts = split /\./ => $name;
+    my $value = $self->_find_value($context, $name);
 
-    $name = shift @parts;
-    return '' if $self->_is_empty($context, $name);
-
-    my $value = $context->{$name};
-
-    foreach my $part (@parts) {
-        return '' if $self->_is_empty($value, $part);
-        $value = $value->{$part};
-    }
-
-    return $value;
+    return $value ? $$value : '';
 }
 
 sub _render_tag_escaped {
@@ -285,10 +292,11 @@ sub _render_inverted_section {
     my $template = shift;
     my $context  = shift;
 
+    my $value = $self->_find_value($context, $name);
     return $self->render($template, $context)
-      unless exists $context->{$name};
+      unless defined $value;
 
-    my $value  = $context->{$name};
+    $value = $$value;
     my $output = '';
 
     if (ref $value eq 'HASH') {
