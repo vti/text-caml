@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use Text::Caml;
 
@@ -57,3 +57,12 @@ $output = $renderer->render(<<'EOF', {name => 'Willy', wrapped => $wrapped});
 {{/wrapped}}
 EOF
 is $output => "<b>Willy is awesome.</b>";
+
+$output = $renderer->render(<<'EOF', {wrapper => sub {$_[1]}}, list => [qw/foo bar/]);
+{{#list}}
+  {{#wrapper}}
+    {{.}}
+  {{/wrapper}}
+{{/list}}
+EOF
+is $output => 'foo bar';
