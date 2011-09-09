@@ -276,6 +276,7 @@ sub _render_section {
         }
     }
     elsif (ref $value eq 'CODE') {
+        $template = $self->render($template, $context);
         $output
           .= $self->render($value->($self, $template, $context), $context);
     }
