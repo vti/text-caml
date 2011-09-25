@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 require Carp;
+require Scalar::Util;
 use File::Spec ();
 
 our $VERSION = '0.009004';
@@ -199,7 +200,8 @@ sub _find_value {
 
     foreach my $part (@parts) {
         return undef if $self->_is_empty($value, $part);
-        $value = $value->{$part};
+        $value =
+          Scalar::Util::blessed($value) ? $value->$part : $value->{$part};
     }
 
     return \$value;
@@ -351,11 +353,20 @@ sub _slurp_template {
 
 sub _is_empty {
     my $self = shift;
-    my ($vars, $var) = @_;
+    my ($vars, $name) = @_;
 
-    return 1 unless exists $vars->{$var};
-    return 1 unless defined $vars->{$var};
-    return 1 if $vars->{$var} eq '';
+    my $var;
+
+    if (Scalar::Util::blessed($vars)) {
+        $var = $vars->$name;
+    }
+    else {
+        return 1 unless exists $vars->{$name};
+        $var = $vars->{$name};
+    }
+
+    return 1 unless defined $var;
+    return 1 if $var eq '';
 
     return 0;
 }

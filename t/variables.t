@@ -1,7 +1,17 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15;
+package Foo;
+
+sub new {
+    shift;
+    bless {@_};
+}
+sub method { shift->{bar} }
+
+package main;
+
+use Test::More tests => 16;
 
 use Text::Caml;
 
@@ -51,3 +61,6 @@ is $output => '';
 
 $output = $renderer->render('{{f1o.bak}}');
 is $output => '';
+
+$output = $renderer->render('{{foo.method}}', {foo => Foo->new(bar => 'baz')});
+is $output => 'baz';

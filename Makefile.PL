@@ -36,9 +36,10 @@ WriteMakefile(
     ),
 
     PREREQ_PM => {
-        'Carp'       => 0,
-        'File::Spec' => 0,
-        'Test::More' => 0
+        'Carp'         => 0,
+        'File::Spec'   => 0,
+        'Scalar::Util' => 0,
+        'Test::More'   => 0,
     },
     test => {TESTS => 't/*.t t/*/*.t'}
 );

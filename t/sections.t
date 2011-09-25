@@ -1,13 +1,36 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15;
+package Foo;
+
+sub new {
+    shift;
+    bless {@_};
+}
+
+sub method { shift->{values} }
+
+package main;
+
+use Test::More tests => 18;
 
 use Text::Caml;
 
 my $renderer = Text::Caml->new;
 
 my $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 1});
+is $output => 'Hello';
+
+$output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => Foo->new});
+is $output => 'Hello';
+
+$output = $renderer->render('{{#bool.method}}Hello{{/bool.method}}', {bool => Foo->new});
+is $output => '';
+
+$output = $renderer->render(
+    '{{#bool.method}}Hello{{/bool.method}}',
+    {bool => Foo->new(values => 1)}
+);
 is $output => 'Hello';
 
 $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 0});
