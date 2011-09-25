@@ -199,6 +199,14 @@ sub _find_value {
     my $value = $context;
 
     foreach my $part (@parts) {
+        if (   exists $value->{'_with'}
+            && Scalar::Util::blessed($value->{'_with'})
+            && $value->{'_with'}->can($part))
+        {
+            $value = $value->{'_with'}->$part;
+            next;
+        }
+
         if (   exists $value->{'.'}
             && Scalar::Util::blessed($value->{'.'})
             && $value->{'.'}->can($part))
@@ -291,7 +299,7 @@ sub _render_section {
           .= $self->render($value->($self, $template, $context), $context);
     }
     elsif ($value) {
-        $output .= $self->render($template, $context);
+        $output .= $self->render($template, {%$context, _with => $value});
     }
 
     return $output;

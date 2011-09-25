@@ -12,7 +12,7 @@ sub method { shift->{values} }
 
 package main;
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 use Text::Caml;
 
@@ -24,7 +24,8 @@ is $output => 'Hello';
 $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => Foo->new});
 is $output => 'Hello';
 
-$output = $renderer->render('{{#bool.method}}Hello{{/bool.method}}', {bool => Foo->new});
+$output = $renderer->render('{{#bool.method}}Hello{{/bool.method}}',
+    {bool => Foo->new});
 is $output => '';
 
 $output = $renderer->render(
@@ -32,6 +33,10 @@ $output = $renderer->render(
     {bool => Foo->new(values => 1)}
 );
 is $output => 'Hello';
+
+$output = $renderer->render('{{#bool}}{{method}}{{/bool}}',
+    {bool => Foo->new(values => '1')});
+is $output => '1';
 
 $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 0});
 is $output => '';
@@ -78,8 +83,8 @@ $output = $renderer->render('{{#list}}{{.}}{{^_last}}, {{/_last}}{{/list}}',
     {list => [1, 2, 3]});
 is $output => '1, 2, 3';
 
-$output =
-  $renderer->render('{{#list}}{{#.}}{{.}}{{/.}}{{/list}}', {list => [[1], [2], [3]]});
+$output = $renderer->render('{{#list}}{{#.}}{{.}}{{/.}}{{/list}}',
+    {list => [[1], [2], [3]]});
 is $output => '123';
 
 $output = $renderer->render('{{#list}}{{method}}{{/list}}',
