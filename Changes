@@ -1,6 +1,10 @@
 Revision history for perl module Text::Caml
 
-0.00904 2011-09-09
+0.00904 2011-09-25
+
+ - Allow objects passing
+ - Render template before passing to lambda
+ - Fixed inverted section bug (Sergey Zasenko)
 
 0.00903 2011-08-22
 
