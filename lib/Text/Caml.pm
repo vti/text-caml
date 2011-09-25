@@ -199,6 +199,14 @@ sub _find_value {
     my $value = $context;
 
     foreach my $part (@parts) {
+        if (   exists $value->{'.'}
+            && Scalar::Util::blessed($value->{'.'})
+            && $value->{'.'}->can($part))
+        {
+            $value = $value->{'.'}->$part;
+            next;
+        }
+
         return undef if $self->_is_empty($value, $part);
         $value =
           Scalar::Util::blessed($value) ? $value->$part : $value->{$part};

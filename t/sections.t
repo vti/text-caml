@@ -12,7 +12,7 @@ sub method { shift->{values} }
 
 package main;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use Text::Caml;
 
@@ -81,6 +81,10 @@ is $output => '1, 2, 3';
 $output =
   $renderer->render('{{#list}}{{#.}}{{.}}{{/.}}{{/list}}', {list => [[1], [2], [3]]});
 is $output => '123';
+
+$output = $renderer->render('{{#list}}{{method}}{{/list}}',
+    {list => [Foo->new(values => 1), Foo->new(values => 2)]});
+is $output => '12';
 
 $output =
   $renderer->render('{{#s}}one{{/s}} {{#s}}{{two}}{{/s}} {{#s}}three{{/s}}',
