@@ -12,13 +12,14 @@ sub method { shift->{values} }
 
 package main;
 
-use Test::More tests => 20;
+use Test::More tests => 21;
 
 use Text::Caml;
 
 my $renderer = Text::Caml->new;
+my $output;
 
-my $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 1});
+$output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => 1});
 is $output => 'Hello';
 
 $output = $renderer->render('{{#bool}}Hello{{/bool}}', {bool => Foo->new});
@@ -35,6 +36,10 @@ $output = $renderer->render(
 is $output => 'Hello';
 
 $output = $renderer->render('{{#bool}}{{method}}{{/bool}}',
+    {bool => Foo->new(values => '1')});
+is $output => '1';
+
+$output = $renderer->render('{{#bool}}{{#method}}{{method}}{{/method}}{{/bool}}',
     {bool => Foo->new(values => '1')});
 is $output => '1';
 

@@ -298,8 +298,11 @@ sub _render_section {
         $output
           .= $self->render($value->($self, $template, $context), $context);
     }
-    elsif ($value) {
+    elsif (ref $value) {
         $output .= $self->render($template, {%$context, _with => $value});
+    }
+    elsif ($value) {
+        $output .= $self->render($template, $context);
     }
 
     return $output;

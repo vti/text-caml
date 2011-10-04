@@ -1,5 +1,11 @@
 Revision history for perl module Text::Caml
 
+0.00905 2011-10-04
+
+ - Fixed 'with' behaviour
+ - Implemented smth like Pascal's with
+ - Context checks for available method too
+
 0.00904 2011-09-25
 
  - Allow objects passing
