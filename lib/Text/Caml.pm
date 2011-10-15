@@ -40,7 +40,6 @@ sub render {
     my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
 
     $self->_parse($template, $context);
-
 }
 
 sub render_file {
@@ -163,8 +162,7 @@ sub _parse {
 
 sub _render_tag {
     my $self    = shift;
-    my $name    = shift;
-    my $context = shift;
+    my ($name, $context) = @_;
 
     my $value;
     my %args;
@@ -191,8 +189,7 @@ sub _render_tag {
 
 sub _find_value {
     my $self    = shift;
-    my $context = shift;
-    my $name    = shift;
+    my ($context, $name) = @_;
 
     my @parts = split /\./ => $name;
 
@@ -225,8 +222,7 @@ sub _find_value {
 
 sub _get_value {
     my $self    = shift;
-    my $context = shift;
-    my $name    = shift;
+    my ($context, $name) = @_;
 
     if ($name eq '.') {
         return '' if $self->_is_empty($context, $name);
@@ -248,8 +244,7 @@ sub _get_value {
 
 sub _render_tag_escaped {
     my $self    = shift;
-    my $tag     = shift;
-    my $context = shift;
+    my ($tag, $context) = @_;
 
     my $do_not_escape;
     if ($tag =~ s/\A \&//xms) {
@@ -265,9 +260,7 @@ sub _render_tag_escaped {
 
 sub _render_section {
     my $self     = shift;
-    my $name     = shift;
-    my $template = shift;
-    my $context  = shift;
+    my ($name, $template, $context) = @_;
 
     my $value = $self->_get_value($context, $name);
 
@@ -309,10 +302,8 @@ sub _render_section {
 }
 
 sub _render_inverted_section {
-    my $self     = shift;
-    my $name     = shift;
-    my $template = shift;
-    my $context  = shift;
+    my $self = shift;
+    my ($name, $template, $context) = @_;
 
     my $value = $self->_find_value($context, $name);
     return $self->render($template, $context)
@@ -337,8 +328,7 @@ sub _render_inverted_section {
 
 sub _render_partial {
     my $self     = shift;
-    my $template = shift;
-    my $context  = shift;
+    my ($template, $context) = @_;
 
     my $content = $self->_slurp_template($template);
 
@@ -347,7 +337,7 @@ sub _render_partial {
 
 sub _slurp_template {
     my $self     = shift;
-    my $template = shift;
+    my ($template) = @_;
 
     my $path =
       defined $self->templates_path
