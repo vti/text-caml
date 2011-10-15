@@ -176,7 +176,7 @@ sub _render_tag {
     if (ref $value eq 'CODE') {
         my $content = $value->($self, '', $context);
         $content = '' unless defined $content;
-        return $self->render($content, $context);
+        return $self->_parse($content, $context);
     }
 
     return $value;
@@ -254,7 +254,7 @@ sub _render_section {
     my $output = '';
 
     if (ref $value eq 'HASH') {
-        $output .= $self->render($template, $value);
+        $output .= $self->_parse($template, $value);
     }
     elsif (ref $value eq 'ARRAY') {
         my $idx = 0;
@@ -268,21 +268,21 @@ sub _render_section {
             $subcontext->{'_first'} = $idx == 0;
             $subcontext->{'_last'}  = $idx == $#$value;
 
-            $output .= $self->render($template, {%$context, %$subcontext});
+            $output .= $self->_parse($template, {%$context, %$subcontext});
 
             $idx++;
         }
     }
     elsif (ref $value eq 'CODE') {
-        $template = $self->render($template, $context);
+        $template = $self->_parse($template, $context);
         $output
-          .= $self->render($value->($self, $template, $context), $context);
+          .= $self->_parse($value->($self, $template, $context), $context);
     }
     elsif (ref $value) {
-        $output .= $self->render($template, {%$context, _with => $value});
+        $output .= $self->_parse($template, {%$context, _with => $value});
     }
     elsif ($value) {
-        $output .= $self->render($template, $context);
+        $output .= $self->_parse($template, $context);
     }
 
     return $output;
@@ -293,7 +293,7 @@ sub _render_inverted_section {
     my ($name, $template, $context) = @_;
 
     my $value = $self->_find_value($context, $name);
-    return $self->render($template, $context)
+    return $self->_parse($template, $context)
       unless defined $value;
 
     $value = $$value;
@@ -304,10 +304,10 @@ sub _render_inverted_section {
     elsif (ref $value eq 'ARRAY') {
         return '' if @$value;
 
-        $output .= $self->render($template, $context);
+        $output .= $self->_parse($template, $context);
     }
     elsif (!$value) {
-        $output .= $self->render($template, $context);
+        $output .= $self->_parse($template, $context);
     }
 
     return $output;
@@ -319,7 +319,7 @@ sub _render_partial {
 
     my $content = $self->_slurp_template($template);
 
-    return $self->render($content, $context);
+    return $self->_parse($content, $context);
 }
 
 sub _slurp_template {
