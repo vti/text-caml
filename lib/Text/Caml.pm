@@ -161,7 +161,7 @@ sub _parse {
 }
 
 sub _render_tag {
-    my $self    = shift;
+    my $self = shift;
     my ($name, $context) = @_;
 
     my $value;
@@ -188,7 +188,7 @@ sub _render_tag {
 }
 
 sub _find_value {
-    my $self    = shift;
+    my $self = shift;
     my ($context, $name) = @_;
 
     my @parts = split /\./ => $name;
@@ -221,7 +221,7 @@ sub _find_value {
 }
 
 sub _get_value {
-    my $self    = shift;
+    my $self = shift;
     my ($context, $name) = @_;
 
     if ($name eq '.') {
@@ -243,7 +243,7 @@ sub _get_value {
 }
 
 sub _render_tag_escaped {
-    my $self    = shift;
+    my $self = shift;
     my ($tag, $context) = @_;
 
     my $do_not_escape;
@@ -259,7 +259,7 @@ sub _render_tag_escaped {
 }
 
 sub _render_section {
-    my $self     = shift;
+    my $self = shift;
     my ($name, $template, $context) = @_;
 
     my $value = $self->_get_value($context, $name);
@@ -327,7 +327,7 @@ sub _render_inverted_section {
 }
 
 sub _render_partial {
-    my $self     = shift;
+    my $self = shift;
     my ($template, $context) = @_;
 
     my $content = $self->_slurp_template($template);
@@ -336,7 +336,7 @@ sub _render_partial {
 }
 
 sub _slurp_template {
-    my $self     = shift;
+    my $self = shift;
     my ($template) = @_;
 
     my $path =
