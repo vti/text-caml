@@ -82,11 +82,6 @@ sub _parse {
                 my $name           = $1;
                 my $end_of_section = $name;
 
-                # Method call
-                if ($name =~ m/^\./) {
-                    $end_of_section =~ s/\(.*//;
-                }
-
                 if ($template
                     =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $end_of_section $END_TAG ($TRAILING_SPACE)?/gcxms
                   )
@@ -227,14 +222,6 @@ sub _get_value {
     if ($name eq '.') {
         return '' if $self->_is_empty($context, $name);
         return $context->{$name};
-    }
-
-    # Method
-    elsif ($name =~ s/^\.//) {
-        my $code   = "do {use strict;use warnings;\$self->$name;};";
-        my $retval = eval $code;
-        Carp::croak("Error near method call: $code: $@") if $@;
-        return $retval;
     }
 
     my $value = $self->_find_value($context, $name);
