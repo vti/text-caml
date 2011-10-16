@@ -67,7 +67,7 @@ sub _parse {
 
             # Tripple
             if ($template =~ m/\G { (.*?) } $END_TAG/gcxms) {
-                $chunk .= $self->_render_tag($1, $context);
+                $chunk .= $self->_parse_tag($1, $context);
             }
 
             # Comment
@@ -86,7 +86,7 @@ sub _parse {
                     =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $end_of_section $END_TAG ($TRAILING_SPACE)?/gcxms
                   )
                 {
-                    $chunk .= $self->_render_section($name, $1, $context);
+                    $chunk .= $self->_parse_section($name, $1, $context);
                 }
                 else {
                     Carp::croak("Section's '$name' end not found");
@@ -105,7 +105,7 @@ sub _parse {
                   )
                 {
                     $chunk
-                      .= $self->_render_inverted_section($name, $1, $context);
+                      .= $self->_parse_inverted_section($name, $1, $context);
                 }
                 else {
                     Carp::croak("Section's '$name' end not found");
@@ -119,12 +119,12 @@ sub _parse {
 
             # Partial
             elsif ($template =~ m/\G $START_OF_PARTIAL (.*?) $END_TAG/gcxms) {
-                $chunk .= $self->_render_partial($1, $context);
+                $chunk .= $self->_parse_partial($1, $context);
             }
 
             # Tag
             elsif ($template =~ m/\G (.*?) $END_TAG/gcxms) {
-                $chunk .= $self->_render_tag_escaped($1, $context);
+                $chunk .= $self->_parse_tag_escaped($1, $context);
             }
             else {
                 Carp::croak("Can't find where tag is closed");
@@ -155,7 +155,7 @@ sub _parse {
     return $output;
 }
 
-sub _render_tag {
+sub _parse_tag {
     my $self = shift;
     my ($name, $context) = @_;
 
@@ -229,7 +229,7 @@ sub _get_value {
     return $value ? $$value : '';
 }
 
-sub _render_tag_escaped {
+sub _parse_tag_escaped {
     my $self = shift;
     my ($tag, $context) = @_;
 
@@ -238,14 +238,14 @@ sub _render_tag_escaped {
         $do_not_escape = 1;
     }
 
-    my $output = $self->_render_tag($tag, $context);
+    my $output = $self->_parse_tag($tag, $context);
 
     $output = $self->_escape($output) unless $do_not_escape;
 
     return $output;
 }
 
-sub _render_section {
+sub _parse_section {
     my $self = shift;
     my ($name, $template, $context) = @_;
 
@@ -288,7 +288,7 @@ sub _render_section {
     return $output;
 }
 
-sub _render_inverted_section {
+sub _parse_inverted_section {
     my $self = shift;
     my ($name, $template, $context) = @_;
 
@@ -313,7 +313,7 @@ sub _render_inverted_section {
     return $output;
 }
 
-sub _render_partial {
+sub _parse_partial {
     my $self = shift;
     my ($template, $context) = @_;
 
