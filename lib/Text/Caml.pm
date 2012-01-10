@@ -384,7 +384,7 @@ __END__
 
 =head1 NAME
 
-Text::Caml - Mustache tamplate engine
+Text::Caml - Mustache template engine
 
 =head1 SYNOPSIS
 
