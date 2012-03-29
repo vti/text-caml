@@ -254,7 +254,7 @@ sub _parse_section {
     my $output = '';
 
     if (ref $value eq 'HASH') {
-        $output .= $self->_parse($template, $value);
+        $output .= $self->_parse($template, {%$context, %$value});
     }
     elsif (ref $value eq 'ARRAY') {
         my $idx = 0;

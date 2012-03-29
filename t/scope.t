@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use Text::Caml;
 
@@ -29,6 +29,10 @@ is $output => 'bar';
 $output = $renderer->render('{{#section}}{{hello}}{{/section}}',
     {section => {hello => 'bar'}, hello => 'foo'});
 is $output => 'bar';
+
+$output = $renderer->render('{{#section}}{{hello.bar}}{{/section}}',
+    {section => {}, hello => {bar => 'foo'}});
+is $output => 'foo';
 
 $output = $renderer->render('{{name}} {{>partial-with-directives}}', {name => 'foo'});
 is $output => 'foo Hello foo!';
