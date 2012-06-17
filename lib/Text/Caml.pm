@@ -70,6 +70,11 @@ sub _parse {
                 $chunk .= $self->_parse_tag($1, $context);
             }
 
+            # Replace
+            elsif ($template =~ m/\G - (.*?) $END_TAG/gcxms) {
+                $chunk .= '{{' . $1 . '}}';
+            }
+
             # Comment
             elsif ($template =~ m/\G ! .*? $END_TAG/gcxms) {
             }
