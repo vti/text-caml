@@ -7,7 +7,7 @@ require Carp;
 require Scalar::Util;
 use File::Spec ();
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
@@ -587,6 +587,8 @@ Viacheslav Tykhanovskyi, C<vti@cpan.org>
 =head1 CREDITS
 
 Sergey Zasenko (und3f)
+
+Andrew Rodland (arodland)
 
 =head1 COPYRIGHT AND LICENSE
 
