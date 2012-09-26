@@ -264,16 +264,16 @@ sub _parse_section {
     elsif (ref $value eq 'ARRAY') {
         my $idx = 0;
         foreach my $el (@$value) {
-            my $subcontext = ref $el eq 'HASH' ? $el : {'.' => $el};
-            $subcontext->{'_idx'} = $idx;
+            my %subcontext = ref $el eq 'HASH' ? %$el : ('.' => $el);
+            $subcontext{'_idx'} = $idx;
 
-            $subcontext->{'_even'} = $idx % 2 == 0;
-            $subcontext->{'_odd'}  = $idx % 2 != 0;
+            $subcontext{'_even'} = $idx % 2 == 0;
+            $subcontext{'_odd'}  = $idx % 2 != 0;
 
-            $subcontext->{'_first'} = $idx == 0;
-            $subcontext->{'_last'}  = $idx == $#$value;
+            $subcontext{'_first'} = $idx == 0;
+            $subcontext{'_last'}  = $idx == $#$value;
 
-            $output .= $self->_parse($template, {%$context, %$subcontext});
+            $output .= $self->_parse($template, {%$context, %subcontext});
 
             $idx++;
         }
