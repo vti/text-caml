@@ -81,7 +81,7 @@ sub _parse {
 
             # Section
             elsif ($template
-                =~ m/\G $START_OF_SECTION (.*?) $END_TAG ($TRAILING_SPACE)?/gcxms
+                =~ m/\G $START_OF_SECTION \s* (.*?) \s* $END_TAG ($TRAILING_SPACE)?/gcxms
               )
             {
                 my $name           = $1;
@@ -123,7 +123,7 @@ sub _parse {
             }
 
             # Partial
-            elsif ($template =~ m/\G $START_OF_PARTIAL (.*?) $END_TAG/gcxms) {
+            elsif ($template =~ m/\G $START_OF_PARTIAL \s* (.*?) \s* $END_TAG/gcxms) {
                 $chunk .= $self->_parse_partial($1, $context);
             }
 

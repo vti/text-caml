@@ -12,7 +12,7 @@ sub method { shift->{values} }
 
 package main;
 
-use Test::More tests => 21;
+use Test::More;
 
 use Text::Caml;
 
@@ -100,3 +100,10 @@ $output =
   $renderer->render('{{#s}}one{{/s}} {{#s}}{{two}}{{/s}} {{#s}}three{{/s}}',
     {s => 1, two => 'two'});
 is $output => 'one two three';
+
+subtest 'ignore spaces' =>sub {
+    my $output = $renderer->render('{{# bool }}Hello{{/bool}}', {bool => 1});
+    is $output => 'Hello';
+};
+
+done_testing;
