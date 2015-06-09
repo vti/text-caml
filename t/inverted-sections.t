@@ -16,10 +16,10 @@ my $template = <<'EOF';
 {{/repo}}
 EOF
 
-is $renderer->render($template, {repo => []}) => '  No repos :(';
+is $renderer->render($template, {repo => []}) => '  No repos :(', 'inverted section {{^repo}} works for emtpy arrayref';
 
 is $renderer->render($template, {repo => [{name => 'repo'}]}) =>
-  '  <b>repo</b>';
+  '  <b>repo</b>', 'inverted section {{^repo}} not matched for non-empty arrayref';
 
 $template = <<'EOF';
 {{text}}
@@ -28,8 +28,8 @@ $template = <<'EOF';
 {{/text}}
 EOF
 
-is $renderer->render($template, {text => 'exists'}) => "exists\n";
-is $renderer->render($template, {text => ''}) => '  No text';
+is $renderer->render($template, {text => 'exists'}) => "exists\n", 'inverted section {{^text}} not matched for non-empty string';
+is $renderer->render($template, {text => ''}) => '  No text', 'inverted section {{^text}} matched for empty string';
 
 $template = <<'EOF';
 {{text.body}}
@@ -38,5 +38,5 @@ $template = <<'EOF';
 {{/text.body}}
 EOF
 
-is $renderer->render($template, {text => {body => 'text exists'}}) => "text exists\n";
-is $renderer->render($template, {text => {body => ''}}), '  Text not exists';
+is $renderer->render($template, {text => {body => 'text exists'}}) => "text exists\n", 'inverted section {{^text.body}} not matched for non-empty hashref';
+is $renderer->render($template, {text => {body => ''}}), '  Text not exists', 'inverted section {{^text.body}} matched for empty string in non-empty hashref';

@@ -23,4 +23,4 @@ Well, $6000, after taxes.
 EOF
 chomp $expected;
 
-is $output => $expected;
+is $output => $expected, 'full test checking many features';

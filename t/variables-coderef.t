@@ -12,4 +12,4 @@ my $output = $renderer->render(
     {   foo => sub {'bar'}
     }
 );
-is $output => 'bar';
+is $output => 'bar', 'sub returning "bar" renders as "bar"';

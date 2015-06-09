@@ -15,19 +15,19 @@ my $templates_path =
 
 my $output =
   $renderer->render_file(File::Spec->catfile($templates_path, 'partial'));
-is $output, 'Hello from partial!';
+is $output, 'Hello from partial!', "partial rendered from relative path ($templates_path)";
 
 $renderer = Text::Caml->new;
 $templates_path = Cwd::abs_path($templates_path);
 
 $output =
   $renderer->render_file(File::Spec->catfile($templates_path, 'partial'));
-is $output, 'Hello from partial!';
+is $output, 'Hello from partial!', "partial rendered from full path ($templates_path)";
 
 $renderer = Text::Caml->new(templates_path => $templates_path);
 
 $output = $renderer->render_file('partial');
-is $output, 'Hello from partial!';
+is $output, 'Hello from partial!', "partial rendered from renderer path ($templates_path)";
 
 eval { $output = $renderer->render_file('no_such_file') };
-ok $@;
+ok $@, 'exception thrown on non-existent partial file';

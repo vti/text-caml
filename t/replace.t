@@ -8,4 +8,4 @@ use Text::Caml;
 my $renderer = Text::Caml->new;
 
 my $output = $renderer->render('{{-hello}}');
-is $output => '{{hello}}';
+is $output => '{{hello}}', 'can escape with {{-hello}} for literal {{hello}}';
