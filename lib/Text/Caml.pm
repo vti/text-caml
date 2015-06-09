@@ -54,7 +54,7 @@ sub render_file {
 sub _parse {
     my $self     = shift;
     my $template = shift;
-    my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
+    my $context  = shift;
 
     my $output = '';
 
