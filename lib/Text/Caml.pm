@@ -48,13 +48,13 @@ sub render_file {
     my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
 
     $template = $self->_slurp_template($template);
-    return $self->_parse($template, @_);
+    return $self->_parse($template, $context);
 }
 
 sub _parse {
     my $self     = shift;
     my $template = shift;
-    my $context  = ref $_[0] eq 'HASH' ? $_[0] : {@_};
+    my $context  = shift;
 
     my $output = '';
 
