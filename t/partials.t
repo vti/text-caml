@@ -19,4 +19,14 @@ is $output => '*Hello foo!*', 'partials can recurse {{>partial-with-recursion}}'
 $output = $renderer->render('{{> partial }}');
 is $output => 'Hello from partial!', 'partial call ignores spaces, eg. {{^ partial }}';
 
+subtest 'render partial with default extension' => sub {
+    my $renderer = Text::Caml->new(
+        templates_path            => 't/templates',
+        default_partial_extension => 'ext'
+    );
+
+    my $output = $renderer->render('{{> partial}}');
+    is $output => 'Hello from partial.ext!';
+};
+
 done_testing;

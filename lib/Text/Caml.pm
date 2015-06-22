@@ -21,9 +21,13 @@ our $END_OF_SECTION            = quotemeta '/';
 
 sub new {
     my $class = shift;
+    my (%params) = @_;
 
-    my $self = {@_};
+    my $self = {};
     bless $self, $class;
+
+    $self->{templates_path}            = $params{templates_path};
+    $self->{default_partial_extension} = $params{default_partial_extension};
 
     $self->set_templates_path('.')
       unless $self->templates_path;
@@ -322,6 +326,10 @@ sub _parse_partial {
     my $self = shift;
     my ($template, $context) = @_;
 
+    if (my $ext = $self->{default_partial_extension}) {
+        $template = "$template.$ext";
+    }
+
     my $content = $self->_slurp_template($template);
 
     return $self->_parse($content, $context);
@@ -553,6 +561,18 @@ Return path where templates are searched.
   my $path = $engine->set_templates_path('templates');
 
 Set base path under which templates are searched.
+
+=head2 C<default_partial_extension>
+
+If this option is set that the extension is automatically added to the partial
+filenames.
+
+  my $engine = Text::Caml->new(default_partial_extension => 'caml');
+
+  ---
+  {{#articles}}
+  {{>article_summary}} # article_summary.caml will be searched
+  {{/articles}}
 
 =head1 METHODS
 
