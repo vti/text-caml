@@ -187,9 +187,11 @@ Sergey Zasenko (und3f)
 
 Andrew Rodland (arodland)
 
+Alex Balhatchet (kaoru)
+
 # COPYRIGHT AND LICENSE
 
-Copyright (C) 2011-2012, Viacheslav Tykhanovskyi
+Copyright (C) 2011-2015, Viacheslav Tykhanovskyi
 
 This program is free software, you can redistribute it and/or modify it under
 the terms of the Artistic License version 2.0.
