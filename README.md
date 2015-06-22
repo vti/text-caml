@@ -151,6 +151,18 @@ Return path where templates are searched.
 
 Set base path under which templates are searched.
 
+## `default_partial_extension`
+
+If this option is set that the extension is automatically added to the partial
+filenames.
+
+    my $engine = Text::Caml->new(default_partial_extension => 'caml');
+
+    ---
+    {{#articles}}
+    {{>article_summary}} # article_summary.caml will be searched
+    {{/articles}}
+
 # METHODS
 
 ## `new`

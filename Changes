@@ -2,10 +2,17 @@ Revision history for perl module Text::Caml
 
 {{$NEXT}}
 
+0.12 2015-06-22T17:20:50Z
+
+ - Added default_partial_extension option
+
 0.11 2015-06-22T17:11:54Z
 
  - Added template generation possibility
  - Fix a hashref "pollution" issue (Andrew Rodland)
+ - Add regression test to check that $context arg handling is correct (Alex Balhatchet)
+ - Remove unnecessary check on $context in _parse() (Alex Balhatchet)
+ - Fix typo in render_file() use of @_ (Alex Balhatchet)
 
 0.10 2012-03-29
 

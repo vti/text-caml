@@ -61,7 +61,7 @@
          "web" : "https://github.com/vti/text-caml"
       }
    },
-   "version" : "0.11",
+   "version" : "0.12",
    "x_contributors" : [
       "Sergey Zasenko <d3fin3@gmail.com>",
       "Andrew Rodland <andrew@cleverdomain.org>",
