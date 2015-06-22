@@ -7,7 +7,7 @@ require Carp;
 require Scalar::Util;
 use File::Spec ();
 
-our $VERSION = '0.12';
+our $VERSION = '0.11';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
@@ -18,8 +18,6 @@ our $START_OF_PARTIAL          = quotemeta '>';
 our $START_OF_SECTION          = quotemeta '#';
 our $START_OF_INVERTED_SECTION = quotemeta '^';
 our $END_OF_SECTION            = quotemeta '/';
-
-our $HASH_KEYS                 = quotemeta '.keys';
 
 sub new {
     my $class = shift;
@@ -256,20 +254,12 @@ sub _parse_section {
     my $self = shift;
     my ($name, $template, $context) = @_;
 
-    my $get_keys = ($name =~ s/$HASH_KEYS$//g)? 1 : 0;
     my $value = $self->_get_value($context, $name);
 
     my $output = '';
 
     if (ref $value eq 'HASH') {
-        if($get_keys eq 1) {
-            foreach my $el (keys %$value) {
-                $value->{$el}{'.'} = $el;
-                $output .= $self->_parse($template, $value->{$el});
-            }
-        } else {
-            $output .= $self->_parse($template, {%$context, %$value});
-        }
+        $output .= $self->_parse($template, {%$context, %$value});
     }
     elsif (ref $value eq 'ARRAY') {
         my $idx = 0;
@@ -502,22 +492,6 @@ elements.
     {{/hash}}
 
     123
-
-
-=item *
-
-Hash keys, C<hash_keys> is a non-empty hash reference. Context is swithed to the
-elements.
-
-    # hash => {one => {val => 1}, two => {val => 2}, three => {val => 3}}
-    {{#hash.keys}}
-    {{.}} = {{val}}
-
-    {{/hash.keys}}
-
-    one = 1
-    two = 2
-    three = 3
 
 =item *
 
