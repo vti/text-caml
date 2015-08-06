@@ -631,7 +631,7 @@ Set a custom escape function instead of builtin , if it's not defined in attribu
 
 Escapes HTML's special chars in string with escape_func
 
-    $engine->escape_html("nonono <&> yesyesyes");
+    my $str = $engine->escape_html("nonono <&> yesyesyes");
 
 =head1 DEVELOPMENT
 
