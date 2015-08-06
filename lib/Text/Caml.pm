@@ -29,7 +29,7 @@ sub new {
 
     $self->{templates_path}            = $params{templates_path};
     $self->{default_partial_extension} = $params{default_partial_extension};
-
+    $self->escape_func($params{escape_func}) if exists $params{escape_func};
     $self->set_templates_path('.')
       unless $self->templates_path;
 
@@ -54,6 +54,36 @@ sub render_file {
 
     $template = $self->_slurp_template($template);
     return $self->_parse($template, $context);
+}
+
+sub escape_html {
+    my $self = shift;
+    return '' unless defined $_[0];
+    $self->escape_func->($_[0]);
+}
+
+sub escape_func {
+    my $self = shift;
+
+    unless (defined $self->{escape_func}) {
+        if (@_ && ref($_[0]) eq 'CODE') {
+            $self->{escape_func} = $_[0];
+        }
+        else {
+            $self->{escape_func} = sub {
+                my $value = shift;
+
+                $value =~ s/&/&amp;/g;
+                $value =~ s/</&lt;/g;
+                $value =~ s/>/&gt;/g;
+                $value =~ s/"/&quot;/g;
+
+                return $value;
+            };
+        }
+    }
+
+    $self->{escape_func};
 }
 
 sub _parse {
@@ -250,7 +280,7 @@ sub _parse_tag_escaped {
 
     my $output = $self->_parse_tag($tag, $context);
 
-    $output = $self->_escape($output) unless $do_not_escape;
+    $output = $self->escape_html($output) unless $do_not_escape;
 
     return $output;
 }
@@ -381,17 +411,6 @@ sub _is_empty {
     return 0;
 }
 
-sub _escape {
-    my $self  = shift;
-    my $value = shift;
-
-    $value =~ s/&/&amp;/g;
-    $value =~ s/</&lt;/g;
-    $value =~ s/>/&gt;/g;
-    $value =~ s/"/&quot;/g;
-
-    return $value;
-}
 
 1;
 __END__
