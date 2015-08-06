@@ -594,6 +594,13 @@ filenames.
   {{>article_summary}} # article_summary.caml will be searched
   {{/articles}}
 
+=head2 C<escape_func>
+
+This option is set a custom escape function instead of builtin
+
+  my $engine = Text::Caml->new(escape_func => \&HTML::Escape::escape_html);
+
+
 =head1 METHODS
 
 =head2 C<new>
@@ -613,6 +620,18 @@ Render template from string.
     $engine->render_file('template.mustache', {foo => 'bar'});
 
 Render template from file.
+
+=head2 C<escape_func>
+
+Set a custom escape function instead of builtin , if it's not defined in attribute escape_func and return sub reference
+
+    $engine->escape_func(\&HTML::Escape::escape_html);
+
+=head2 C<escape_html>
+
+Escapes HTML's special chars in string with escape_func
+
+    $engine->escape_html("nonono <&> yesyesyes");
 
 =head1 DEVELOPMENT
 
