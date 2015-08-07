@@ -26,7 +26,8 @@ sub new {
 
     my $self = {};
     bless $self, $class;
-
+    $self->{use_cache} = $params{use_cache} ||= 0;
+    $self->{cache} = {};
     $self->{templates_path}            = $params{templates_path};
     $self->{default_partial_extension} = $params{default_partial_extension};
     $self->escape_func($params{escape_func}) if exists $params{escape_func};
@@ -84,6 +85,12 @@ sub escape_func {
     }
 
     $self->{escape_func};
+}
+
+sub use_cache {
+    my $self = shift;
+    $self->{use_cache} = $_[0] if @_;
+    $self->{use_cache};
 }
 
 sub _parse {
@@ -376,7 +383,22 @@ sub _slurp_template {
       ? File::Spec->catfile($self->templates_path, $template)
       : $template;
 
+    # return cached entry
+    if ($self->{use_cache} == 2) {
+        if (my $e = $self->{cache}->{$path}) {
+            return $e->[1];
+        }
+    }
+
     croak("Can't find '$path'") unless defined $path && -f $path;
+
+    my @st = stat $path;
+
+    # return cached entry after comparing mtime
+    if (my $e = $self->{cache}->{$path}) {
+        return $e->[1]
+          if $st[9] == $e->[0]; # compare mtime
+    }
 
     my $content = do {
         local $/;
@@ -387,6 +409,11 @@ sub _slurp_template {
     croak("Can't open '$template'") unless defined $content;
 
     chomp $content;
+
+    $self->{cache}->{$path} = [
+        $st[9], # mtime
+        $content,
+    ] if $self->{use_cache};
 
     return $content;
 }
