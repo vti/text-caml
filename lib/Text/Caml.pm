@@ -627,6 +627,9 @@ This option is set a custom escape function instead of builtin
 
   my $engine = Text::Caml->new(escape_func => \&HTML::Escape::escape_html);
 
+=head2 C<use_cache>
+
+Cache mode (0: no cache (default), 1: cache with update check, 2: cache but do not check updates)
 
 =head1 METHODS
 
