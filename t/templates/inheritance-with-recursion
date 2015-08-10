@@ -1,0 +1,1 @@
+{{<inheritance}}{{$block}}I'm recursive{{/block}}{{/inheritance}}

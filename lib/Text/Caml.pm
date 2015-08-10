@@ -14,10 +14,14 @@ our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
 our $START_TAG      = qr/{{/x;
 our $END_TAG        = qr/}}/x;
 
-our $START_OF_PARTIAL          = quotemeta '>';
-our $START_OF_SECTION          = quotemeta '#';
-our $START_OF_INVERTED_SECTION = quotemeta '^';
-our $END_OF_SECTION            = quotemeta '/';
+our $START_OF_PARTIAL              = quotemeta '>';
+our $START_OF_SECTION              = quotemeta '#';
+our $START_OF_INVERTED_SECTION     = quotemeta '^';
+our $END_OF_SECTION                = quotemeta '/';
+our $START_OF_TEMPLATE_INHERITANCE = quotemeta '<';
+our $END_OF_TEMPLATE_INHERITANCE   = quotemeta '/';
+our $START_OF_BLOCK                = quotemeta '$';
+our $END_OF_BLOCK                  = quotemeta '/';
 
 sub new {
     my $class = shift;
@@ -59,6 +63,7 @@ sub _parse {
     my $self     = shift;
     my $template = shift;
     my $context  = shift;
+    my $override = shift;
 
     my $output = '';
 
@@ -129,6 +134,39 @@ sub _parse {
             # Partial
             elsif ($template =~ m/\G $START_OF_PARTIAL \s* (.*?) \s* $END_TAG/gcxms) {
                 $chunk .= $self->_parse_partial($1, $context);
+            }
+
+            # Inherited template
+            elsif ($template =~ m/\G $START_OF_TEMPLATE_INHERITANCE \s* (.*?) \s* $END_TAG/gcxms)
+            {
+                my $name           = $1;
+                my $end_of_inherited_template = $name;
+
+                if ($template
+                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_TEMPLATE_INHERITANCE $end_of_inherited_template $END_TAG ($TRAILING_SPACE)?/gcxms
+                  )
+                {
+                    $chunk .= $self->_parse_inherited_template($name, $1, $context);
+                }
+                else {
+                    Carp::croak("Section's '$name' end not found");
+                }
+            }
+
+            # block
+            elsif ($template =~ m/\G $START_OF_BLOCK \s* (.*?) \s* $END_TAG/gcxms) {
+                my $name           = $1;
+                my $end_of_block = $name;
+
+                if ($template
+                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_BLOCK $end_of_block $END_TAG/gcxms
+                  )
+                {
+                    $chunk .= $self->_parse_block($name, $1, $context, $override);
+                }
+                else {
+                    Carp::croak("Section's '$name' end not found");
+                }
             }
 
             # Tag
@@ -333,6 +371,33 @@ sub _parse_partial {
     my $content = $self->_slurp_template($template);
 
     return $self->_parse($content, $context);
+}
+
+sub _parse_inherited_template {
+    my $self = shift;
+    my ($name, $override, $context) = @_;
+
+    if (my $ext = $self->{default_partial_extension}) {
+        $name = "$name.$ext";
+    }
+
+    my $content = $self->_slurp_template($name);
+
+    return $self->_parse($content, $context, $override);
+}
+
+sub _parse_block {
+    my $self = shift;
+    my ($name, $template, $context, $override) = @_;
+
+    # get block content from override
+    my $content;
+    if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gxms) {
+        my $content = $1;
+        return $self->_parse($content, $context);
+    }
+
+    return $self->_parse($template, $context);
 }
 
 sub _slurp_template {
@@ -545,6 +610,37 @@ current context and can be recursive.
     {{#articles}}
     {{>article_summary}}
     {{/articles}}
+
+=head3 Nested Templates
+
+This gives horgan.js style template inheritance.
+
+   {{! header.mustache }}
+   <head>
+     <title>{{$title}}Default title{{/title}}</title>
+   </head>
+
+   {{! base.mustache }}
+    <html>
+      {{$header}}{{/header}}
+      {{$content}}{{/content}}
+    </html>
+
+    {{! mypage.mustache }}
+    {{<base}}
+      {{$header}}
+        {{<header}}
+          {{$title}}My page title{{/title}}
+        {{/header}}
+      {{/header}}
+
+      {{$content}}
+        <h1>Hello world</h1>
+      {{/content}}
+    {{/base}}
+
+    Rendering mypage.mustache would output:
+    <html><head><title>My page title</title></head><h1>Hello world</h1></html>
 
 =cut
 
