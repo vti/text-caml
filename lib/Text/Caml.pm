@@ -29,6 +29,23 @@ sub new {
     $self->{templates_path}            = $params{templates_path};
     $self->{default_partial_extension} = $params{default_partial_extension};
 
+    if (exists $params{escape_html} and ref($params{escape_html}) eq 'CODE') {
+        $self->{escape_html} = $params{escape_html};
+
+    }
+    else {
+        $self->{escape_html} = sub {
+            my $value = shift;
+
+            $value =~ s/&/&amp;/g;
+            $value =~ s/</&lt;/g;
+            $value =~ s/>/&gt;/g;
+            $value =~ s/"/&quot;/g;
+
+            return $value;
+        };
+    }
+
     $self->set_templates_path('.')
       unless $self->templates_path;
 
@@ -53,6 +70,12 @@ sub render_file {
 
     $template = $self->_slurp_template($template);
     return $self->_parse($template, $context);
+}
+
+sub escape_html {
+    my $self = shift;
+    return '' unless defined $_[0];
+    $self->{escape_html}->($_[0]);
 }
 
 sub _parse {
@@ -249,7 +272,7 @@ sub _parse_tag_escaped {
 
     my $output = $self->_parse_tag($tag, $context);
 
-    $output = $self->_escape($output) unless $do_not_escape;
+    $output = $self->escape_html($output) unless $do_not_escape;
 
     return $output;
 }
@@ -380,17 +403,6 @@ sub _is_empty {
     return 0;
 }
 
-sub _escape {
-    my $self  = shift;
-    my $value = shift;
-
-    $value =~ s/&/&amp;/g;
-    $value =~ s/</&lt;/g;
-    $value =~ s/>/&gt;/g;
-    $value =~ s/"/&quot;/g;
-
-    return $value;
-}
 
 1;
 __END__
@@ -574,7 +586,13 @@ filenames.
   {{>article_summary}} # article_summary.caml will be searched
   {{/articles}}
 
-=head1 METHODS
+=head2 C<escape_html>
+
+This option is set a custom escape function instead of builtin
+
+  my $engine = Text::Caml->new(escape_html => \&HTML::Escape::escape_html);
+
+head1 METHODS
 
 =head2 C<new>
 
@@ -594,7 +612,13 @@ Render template from string.
 
 Render template from file.
 
-=head1 DEVELOPMENT
+=head2 C<escape_html>
+
+Escapes HTML's special chars in string with function from escape_html attribute
+
+    my $str = $engine->escape_html("nonono <&> yesyesyes");
+
+head1 DEVELOPMENT
 
 =head2 Repository
 
