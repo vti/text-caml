@@ -18,6 +18,8 @@ our $START_OF_SECTION          = quotemeta '#';
 our $START_OF_INVERTED_SECTION = quotemeta '^';
 our $END_OF_SECTION            = quotemeta '/';
 
+my  %CACHE = ();
+
 sub croak {require Carp; goto &Carp::croak}
 
 sub new {
@@ -27,7 +29,7 @@ sub new {
     my $self = {};
     bless $self, $class;
     $self->{use_cache} = $params{use_cache} ||= 0;
-    $self->{cache} = {};
+    $self->{cache} = \%CACHE;
     $self->{templates_path}            = $params{templates_path};
     $self->{default_partial_extension} = $params{default_partial_extension};
     $self->escape_func($params{escape_func}) if exists $params{escape_func};
