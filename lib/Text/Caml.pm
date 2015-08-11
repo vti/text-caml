@@ -3,7 +3,6 @@ package Text::Caml;
 use strict;
 use warnings;
 
-require Carp;
 require Scalar::Util;
 use File::Spec ();
 
@@ -98,7 +97,7 @@ sub _parse {
                     $chunk .= $self->_parse_section($name, $1, $context);
                 }
                 else {
-                    Carp::croak("Section's '$name' end not found");
+                    _croak("Section's '$name' end not found");
                 }
             }
 
@@ -117,13 +116,13 @@ sub _parse {
                       .= $self->_parse_inverted_section($name, $1, $context);
                 }
                 else {
-                    Carp::croak("Section's '$name' end not found");
+                    _croak("Section's '$name' end not found");
                 }
             }
 
             # End of section
             elsif ($template =~ m/\G $END_OF_SECTION (.*?) $END_TAG/gcxms) {
-                Carp::croak("Unexpected end of section '$1'");
+                _croak("Unexpected end of section '$1'");
             }
 
             # Partial
@@ -136,7 +135,7 @@ sub _parse {
                 $chunk .= $self->_parse_tag_escaped($1, $context);
             }
             else {
-                Carp::croak("Can't find where tag is closed");
+                _croak("Can't find where tag is closed");
             }
 
             if ($chunk ne '') {
@@ -345,7 +344,7 @@ sub _slurp_template {
       ? File::Spec->catfile($self->templates_path, $template)
       : $template;
 
-    Carp::croak("Can't find '$path'") unless defined $path && -f $path;
+    _croak("Can't find '$path'") unless defined $path && -f $path;
 
     my $content = do {
         local $/;
@@ -353,7 +352,7 @@ sub _slurp_template {
         <$file>;
     };
 
-    Carp::croak("Can't open '$template'") unless defined $content;
+    _croak("Can't open '$template'") unless defined $content;
 
     chomp $content;
 
@@ -391,6 +390,8 @@ sub _escape {
 
     return $value;
 }
+
+sub _croak {require Carp; goto &Carp::croak}
 
 1;
 __END__
