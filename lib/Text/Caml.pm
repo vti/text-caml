@@ -3,7 +3,6 @@ package Text::Caml;
 use strict;
 use warnings;
 
-require Carp;
 require Scalar::Util;
 use File::Spec ();
 
@@ -19,16 +18,21 @@ our $START_OF_SECTION          = quotemeta '#';
 our $START_OF_INVERTED_SECTION = quotemeta '^';
 our $END_OF_SECTION            = quotemeta '/';
 
+my  %CACHE = ();
+
+sub croak {require Carp; goto &Carp::croak}
+
 sub new {
     my $class = shift;
     my (%params) = @_;
 
     my $self = {};
     bless $self, $class;
-
+    $self->{use_cache} = $params{use_cache} ||= 0;
+    $self->{cache} = \%CACHE;
     $self->{templates_path}            = $params{templates_path};
     $self->{default_partial_extension} = $params{default_partial_extension};
-
+    $self->escape_func($params{escape_func}) if exists $params{escape_func};
     $self->set_templates_path('.')
       unless $self->templates_path;
 
@@ -53,6 +57,42 @@ sub render_file {
 
     $template = $self->_slurp_template($template);
     return $self->_parse($template, $context);
+}
+
+sub escape_html {
+    my $self = shift;
+    return '' unless defined $_[0];
+    $self->escape_func->($_[0]);
+}
+
+sub escape_func {
+    my $self = shift;
+
+    unless (defined $self->{escape_func}) {
+        if (@_ && ref($_[0]) eq 'CODE') {
+            $self->{escape_func} = $_[0];
+        }
+        else {
+            $self->{escape_func} = sub {
+                my $value = shift;
+
+                $value =~ s/&/&amp;/g;
+                $value =~ s/</&lt;/g;
+                $value =~ s/>/&gt;/g;
+                $value =~ s/"/&quot;/g;
+
+                return $value;
+            };
+        }
+    }
+
+    $self->{escape_func};
+}
+
+sub use_cache {
+    my $self = shift;
+    $self->{use_cache} = $_[0] if @_;
+    $self->{use_cache};
 }
 
 sub _parse {
@@ -98,7 +138,7 @@ sub _parse {
                     $chunk .= $self->_parse_section($name, $1, $context);
                 }
                 else {
-                    Carp::croak("Section's '$name' end not found");
+                    croak("Section's '$name' end not found");
                 }
             }
 
@@ -117,13 +157,13 @@ sub _parse {
                       .= $self->_parse_inverted_section($name, $1, $context);
                 }
                 else {
-                    Carp::croak("Section's '$name' end not found");
+                    croak("Section's '$name' end not found");
                 }
             }
 
             # End of section
             elsif ($template =~ m/\G $END_OF_SECTION (.*?) $END_TAG/gcxms) {
-                Carp::croak("Unexpected end of section '$1'");
+                croak("Unexpected end of section '$1'");
             }
 
             # Partial
@@ -136,7 +176,7 @@ sub _parse {
                 $chunk .= $self->_parse_tag_escaped($1, $context);
             }
             else {
-                Carp::croak("Can't find where tag is closed");
+                croak("Can't find where tag is closed");
             }
 
             if ($chunk ne '') {
@@ -249,7 +289,7 @@ sub _parse_tag_escaped {
 
     my $output = $self->_parse_tag($tag, $context);
 
-    $output = $self->_escape($output) unless $do_not_escape;
+    $output = $self->escape_html($output) unless $do_not_escape;
 
     return $output;
 }
@@ -345,7 +385,22 @@ sub _slurp_template {
       ? File::Spec->catfile($self->templates_path, $template)
       : $template;
 
-    Carp::croak("Can't find '$path'") unless defined $path && -f $path;
+    # return cached entry
+    if ($self->{use_cache} == 2) {
+        if (my $e = $self->{cache}->{$path}) {
+            return $e->[1];
+        }
+    }
+
+    croak("Can't find '$path'") unless defined $path && -f $path;
+
+    my @st = stat $path;
+
+    # return cached entry after comparing mtime
+    if (my $e = $self->{cache}->{$path}) {
+        return $e->[1]
+          if $st[9] == $e->[0]; # compare mtime
+    }
 
     my $content = do {
         local $/;
@@ -353,9 +408,14 @@ sub _slurp_template {
         <$file>;
     };
 
-    Carp::croak("Can't open '$template'") unless defined $content;
+    croak("Can't open '$template'") unless defined $content;
 
     chomp $content;
+
+    $self->{cache}->{$path} = [
+        $st[9], # mtime
+        $content,
+    ] if $self->{use_cache};
 
     return $content;
 }
@@ -380,17 +440,6 @@ sub _is_empty {
     return 0;
 }
 
-sub _escape {
-    my $self  = shift;
-    my $value = shift;
-
-    $value =~ s/&/&amp;/g;
-    $value =~ s/</&lt;/g;
-    $value =~ s/>/&gt;/g;
-    $value =~ s/"/&quot;/g;
-
-    return $value;
-}
 
 1;
 __END__
@@ -574,6 +623,16 @@ filenames.
   {{>article_summary}} # article_summary.caml will be searched
   {{/articles}}
 
+=head2 C<escape_func>
+
+This option is set a custom escape function instead of builtin
+
+  my $engine = Text::Caml->new(escape_func => \&HTML::Escape::escape_html);
+
+=head2 C<use_cache>
+
+Cache mode (0: no cache (default), 1: cache with update check, 2: cache but do not check updates)
+
 =head1 METHODS
 
 =head2 C<new>
@@ -593,6 +652,18 @@ Render template from string.
     $engine->render_file('template.mustache', {foo => 'bar'});
 
 Render template from file.
+
+=head2 C<escape_func>
+
+Set a custom escape function instead of builtin , if it's not defined in attribute escape_func and return sub reference
+
+    $engine->escape_func(\&HTML::Escape::escape_html);
+
+=head2 C<escape_html>
+
+Escapes HTML's special chars in string with escape_func
+
+    my $str = $engine->escape_html("nonono <&> yesyesyes");
 
 =head1 DEVELOPMENT
 
