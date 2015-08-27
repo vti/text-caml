@@ -392,23 +392,18 @@ sub _parse_block {
 
     # get block content from override
     my $content;
-    # first, see if we can find any starting block with this name
+   
+    # first, see if we can find any starting block with this name in the override
     if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG/gcxms) {
-        # get the content of the block
+        # get the content of the override block and make sure there's a corresponding end-block tag for it!
         if ($override =~ m/ (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gcxms){
             my $content = $1;
             return $self->_parse($content, $context);
         } else {
-            
-        }
-               
+            Carp::croak("Block's '$name' end not found");
+        }               
     }
-    
-    if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gcxms) {
-        my $content = $1;
-        return $self->_parse($content, $context);
-    }
-
+   
     return $self->_parse($template, $context);
 }
 
