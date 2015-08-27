@@ -149,7 +149,7 @@ sub _parse {
                     $chunk .= $self->_parse_inherited_template($name, $1, $context);
                 }
                 else {
-                    Carp::croak("Section's '$name' end not found");
+                    Carp::croak("Nested template's '$name' end not found");
                 }
             }
 
@@ -165,7 +165,7 @@ sub _parse {
                     $chunk .= $self->_parse_block($name, $1, $context, $override);
                 }
                 else {
-                    Carp::croak("Section's '$name' end not found");
+                    Carp::croak("Block's '$name' end not found");
                 }
             }
 
@@ -392,7 +392,19 @@ sub _parse_block {
 
     # get block content from override
     my $content;
-    if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gxms) {
+    # first, see if we can find any starting block with this name
+    if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG/gcxms) {
+        # get the content of the block
+        if ($override =~ m/ (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gcxms){
+            my $content = $1;
+            return $self->_parse($content, $context);
+        } else {
+            
+        }
+               
+    }
+    
+    if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gcxms) {
         my $content = $1;
         return $self->_parse($content, $context);
     }
