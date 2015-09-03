@@ -715,6 +715,10 @@ Andrew Rodland (arodland)
 
 Alex Balhatchet (kaoru)
 
+Yves Chevallier
+
+Ovidiu Stateina
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2011-2015, Viacheslav Tykhanovskyi
