@@ -1,0 +1,1 @@
+{{$block}}This is a {{value}} value{{/block}}
