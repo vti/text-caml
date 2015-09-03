@@ -2,6 +2,13 @@ Revision history for perl module Text::Caml
 
 {{$NEXT}}
 
+0.13 2015-09-03T06:55:41Z
+
+ - Fixed the way we parse the blocks to ensure we provide correct error messages in case there is a syntax error and no
+   closing block tag is present (Ovidiu Stateina)
+ - Add more relevant error messages, improve block parsing. Work in progress (Ovidiu Stateina)
+ - Added support for nested templates (Ovidiu Stateina)
+
 0.12 2015-06-22T17:20:50Z
 
  - Added default_partial_extension option

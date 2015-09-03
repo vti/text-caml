@@ -137,6 +137,37 @@ current context and can be recursive.
     {{>article_summary}}
     {{/articles}}
 
+### Nested Templates
+
+This gives horgan.js style template inheritance.
+
+    {{! header.mustache }}
+    <head>
+      <title>{{$title}}Default title{{/title}}</title>
+    </head>
+
+    {{! base.mustache }}
+     <html>
+       {{$header}}{{/header}}
+       {{$content}}{{/content}}
+     </html>
+
+     {{! mypage.mustache }}
+     {{<base}}
+       {{$header}}
+         {{<header}}
+           {{$title}}My page title{{/title}}
+         {{/header}}
+       {{/header}}
+
+       {{$content}}
+         <h1>Hello world</h1>
+       {{/content}}
+     {{/base}}
+
+     Rendering mypage.mustache would output:
+     <html><head><title>My page title</title></head><h1>Hello world</h1></html>
+
 # ATTRIBUTES
 
 ## `templates_path`
@@ -200,6 +231,10 @@ Sergey Zasenko (und3f)
 Andrew Rodland (arodland)
 
 Alex Balhatchet (kaoru)
+
+Yves Chevallier
+
+Ovidiu Stateina
 
 # COPYRIGHT AND LICENSE
 

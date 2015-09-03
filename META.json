@@ -4,7 +4,7 @@
       "Viacheslav Tykhanovskyi, C<vti@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v2.5.0, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "artistic_2"
    ],
@@ -61,12 +61,15 @@
          "web" : "https://github.com/vti/text-caml"
       }
    },
-   "version" : "0.12",
+   "version" : "0.13",
    "x_contributors" : [
       "Sergey Zasenko <d3fin3@gmail.com>",
       "Andrew Rodland <andrew@cleverdomain.org>",
       "Alex Balhatchet <kaoru@slackwise.net>",
       "Yves Chevallier <nowox@x0x.ch>",
-      "vti <viacheslav.t@gmail.com>"
-   ]
+      "vti <viacheslav.t@gmail.com>",
+      "Ovidiu Stateina <ovidiu.stateina@buzzfeed.com>",
+      "vti <vti@clarive.com>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27300"
 }

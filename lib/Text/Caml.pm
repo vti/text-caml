@@ -7,7 +7,7 @@ require Carp;
 require Scalar::Util;
 use File::Spec ();
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 our $LEADING_SPACE  = qr/(?:\n [ ]*)?/x;
 our $TRAILING_SPACE = qr/(?:[ ]* \n)?/x;
