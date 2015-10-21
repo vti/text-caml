@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use File::Path qw(make_path remove_tree);
+use File::Basename qw(basename);
 use FindBin '$Bin';
 use Text::Caml;
 use YAML::XS qw( LoadFile );
@@ -91,6 +92,8 @@ sub shutdown {
 }
 
 while ( my $filename = <$Bin/../ext/spec/specs/*.yml> ) {
+    my $basename = basename $filename;
+
     startup();
 
     my $spec  = LoadFile($filename);
@@ -101,7 +104,7 @@ while ( my $filename = <$Bin/../ext/spec/specs/*.yml> ) {
     foreach my $t ( @{$tests} ) {
         setup($t);
 
-        $t->{signature} = "$t->{name}\n$t->{desc}\n";
+        $t->{signature} = "$basename: $t->{name}\n$t->{desc}\n";
         my $out = '';
 
         eval {
