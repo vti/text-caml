@@ -5,7 +5,6 @@ use File::Path qw(make_path remove_tree);
 use File::Basename qw(basename);
 use FindBin '$Bin';
 use Text::Caml;
-use YAML::XS qw( LoadFile );
 
 # To run the tests, set the environment variable like this:
 # RUN_SPECS=1 prove t/specs.t
@@ -14,6 +13,7 @@ BEGIN {
     require Test::More;
 
     if ( $ENV{RUN_SPECS} ) {
+        require YAML::XS;
         import Test::More tests => 124;
     }
     else {
@@ -96,7 +96,7 @@ while ( my $filename = <$Bin/../ext/spec/specs/*.yml> ) {
 
     startup();
 
-    my $spec  = LoadFile($filename);
+    my $spec  = YAML::XS::LoadFile($filename);
     my $tests = $spec->{tests};
 
     note "\n---------\n$spec->{overview}";
