@@ -236,6 +236,8 @@ Yves Chevallier
 
 Ovidiu Stateina
 
+Fernando Oliveira
+
 # COPYRIGHT AND LICENSE
 
 Copyright (C) 2011-2015, Viacheslav Tykhanovskyi

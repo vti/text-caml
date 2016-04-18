@@ -2,6 +2,10 @@ Revision history for perl module Text::Caml
 
 {{$NEXT}}
 
+0.14 2016-04-18T22:07:12Z
+
+ - Implement array indexing (Fernando Oliveira)
+
 0.13 2015-09-03T06:55:41Z
 
  - Fixed the way we parse the blocks to ensure we provide correct error messages in case there is a syntax error and no
