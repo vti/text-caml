@@ -238,13 +238,19 @@ sub _find_value {
     my $value = $context;
 
     foreach my $part (@parts) {
-        if (   exists $value->{'_with'}
+        if ( ref $value eq "HASH"
+            && exists $value->{'_with'}
             && Scalar::Util::blessed($value->{'_with'})
             && $value->{'_with'}->can($part))
         {
             $value = $value->{'_with'}->$part;
             next;
         }
+
+	if( ref $value eq "ARRAY" ) {
+		$value = $value->[$part];
+		next;
+	}
 
         if (   exists $value->{'.'}
             && Scalar::Util::blessed($value->{'.'})
