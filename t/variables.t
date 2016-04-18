@@ -11,7 +11,7 @@ sub method { shift->{bar} }
 
 package main;
 
-use Test::More tests => 16;
+use Test::More tests => 18;
 
 use Text::Caml;
 
@@ -64,3 +64,9 @@ is $output => '', '{{foo.bak}} non-existent hashref foo renders as empty string'
 
 $output = $renderer->render('{{foo.method}}', {foo => Foo->new(bar => 'baz')});
 is $output => 'baz', '{{foo.method}} object method call renders as return value of method';
+
+$output = $renderer->render('{{foo.0}}', {foo => [qw/bar baz/]});
+is $output => 'bar', 'get index of a array';
+
+$output = $renderer->render('{{{foo.1.text}}}', {foo => [{text => "bar"}, {text => "baz"}]});
+is $output => 'baz', 'get a has as a index of a array';
