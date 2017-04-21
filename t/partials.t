@@ -29,4 +29,11 @@ subtest 'render partial with default extension' => sub {
     is $output => 'Hello from partial.ext!';
 };
 
+subtest 'render partial without parsing' => sub {
+    my $renderer = Text::Caml->new(templates_path => 't/templates');
+
+    my $output = $renderer->render('{{>&partial-not-parsed}}');
+    is $output => 'Hello from partial {{not_parsed}}!';
+};
+
 done_testing;

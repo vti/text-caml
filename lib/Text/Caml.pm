@@ -374,9 +374,14 @@ sub _parse_partial {
         $template = "$template.$ext";
     }
 
+    my $parse = 1;
+    if ($template =~ s{^\&}{}) {
+        $parse = 0;
+    }
+
     my $content = $self->_slurp_template($template);
 
-    return $self->_parse($content, $context);
+    return $parse ? $self->_parse($content, $context) : $content;
 }
 
 sub _parse_inherited_template {
@@ -622,6 +627,12 @@ current context and can be recursive.
 
     {{#articles}}
     {{>article_summary}}
+    {{/articles}}
+
+If you want to include another file without parsing, prefix the filename with C<&>:
+
+    {{#articles}}
+    {{>&article_summary_not_parsed}}
     {{/articles}}
 
 =head3 Nested Templates
