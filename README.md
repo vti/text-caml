@@ -137,6 +137,12 @@ current context and can be recursive.
     {{>article_summary}}
     {{/articles}}
 
+If you want to include another file without parsing, prefix the filename with `&`:
+
+    {{#articles}}
+    {{>&article_summary_not_parsed}}
+    {{/articles}}
+
 ### Nested Templates
 
 This gives horgan.js style template inheritance.

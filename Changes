@@ -2,6 +2,10 @@ Revision history for perl module Text::Caml
 
 {{$NEXT}}
 
+0.15 2017-04-21T23:19:09Z
+
+ - Not parsed partials
+
 0.14 2016-04-18T22:07:12Z
 
  - Implement array indexing (Fernando Oliveira)
