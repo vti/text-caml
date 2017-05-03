@@ -2,6 +2,10 @@ Revision history for perl module Text::Caml
 
 {{$NEXT}}
 
+0.16 2017-05-03T10:42:27Z
+
+ - Escape "{" and "}" (Shoichi Kaji)
+
 0.15 2017-04-21T23:19:09Z
 
  - Not parsed partials

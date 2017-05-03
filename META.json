@@ -61,7 +61,7 @@
          "web" : "https://github.com/vti/text-caml"
       }
    },
-   "version" : "0.15",
+   "version" : "0.16",
    "x_contributors" : [
       "Sergey Zasenko <d3fin3@gmail.com>",
       "Andrew Rodland <andrew@cleverdomain.org>",
@@ -71,6 +71,7 @@
       "Michael Ivanchenko <ivanchenko.michael.work@gmail.com>",
       "vti <vti@clarive.com>",
       "Fernando Oliveira <fco@cpan.org>",
+      "Shoichi Kaji <skaji@cpan.org>",
       "vti <viacheslav.t@gmail.com>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27300_01"
