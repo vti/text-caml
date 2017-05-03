@@ -75,7 +75,7 @@ sub _parse {
             my $leading_newline = !!$1;
 
             # Tripple
-            if ($template =~ m/\G { (.*?) } $END_TAG/gcxms) {
+            if ($template =~ m/\G \{ (.*?) \} $END_TAG/gcxms) {
                 $chunk .= $self->_parse_tag($1, $context);
             }
 
