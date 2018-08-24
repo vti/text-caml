@@ -32,6 +32,7 @@ sub new {
 
     $self->{templates_path}            = $params{templates_path};
     $self->{default_partial_extension} = $params{default_partial_extension};
+    $self->{do_not_escape}             = $params{do_not_escape};
 
     $self->set_templates_path('.')
       unless $self->templates_path;
@@ -286,9 +287,9 @@ sub _parse_tag_escaped {
     my $self = shift;
     my ($tag, $context) = @_;
 
-    my $do_not_escape;
+    my $do_not_escape = $self->{do_not_escape};
     if ($tag =~ s/\A \&//xms) {
-        $do_not_escape = 1;
+        $do_not_escape = !$do_not_escape;
     }
 
     my $output = $self->_parse_tag($tag, $context);
