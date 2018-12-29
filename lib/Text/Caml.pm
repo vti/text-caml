@@ -90,15 +90,21 @@ sub _parse {
             }
 
             # Section
-            elsif ($template
-                =~ m/\G $START_OF_SECTION \s* (.*?) \s* $END_TAG ($TRAILING_SPACE)?/gcxms
-              )
-            {
+            elsif ($template =~ m/\G $START_OF_SECTION \s* (.*?) \s* $END_TAG ($TRAILING_SPACE)?/gcxms) {
                 my $name           = $1;
                 my $end_of_section = $name;
 
-                if ($template
-                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $end_of_section $END_TAG ($TRAILING_SPACE)?/gcxms
+                if (
+                    $template =~ m/
+                    \G
+                    (.*?)
+                    ($LEADING_SPACE)?
+                    $START_TAG
+                    $END_OF_SECTION
+                    $end_of_section
+                    $END_TAG
+                    ($TRAILING_SPACE)?
+                    /gcxms
                   )
                 {
                     $chunk .= $self->_parse_section($name, $1, $context);
@@ -109,18 +115,13 @@ sub _parse {
             }
 
             # Inverted section
-            elsif ($template
-                =~ m/\G $START_OF_INVERTED_SECTION (.*?) $END_TAG ($TRAILING_SPACE)?/gcxms
-              )
-            {
+            elsif ($template =~ m/\G $START_OF_INVERTED_SECTION (.*?) $END_TAG ($TRAILING_SPACE)?/gcxms) {
                 my $name = $1;
 
-                if ($template
-                    =~ m/ \G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $name $END_TAG ($TRAILING_SPACE)?/gcxms
-                  )
+                if ($template =~
+                    m/ \G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_SECTION $name $END_TAG ($TRAILING_SPACE)?/gcxms)
                 {
-                    $chunk
-                      .= $self->_parse_inverted_section($name, $1, $context);
+                    $chunk .= $self->_parse_inverted_section($name, $1, $context);
                 }
                 else {
                     Carp::croak("Section's '$name' end not found");
@@ -138,13 +139,20 @@ sub _parse {
             }
 
             # Inherited template
-            elsif ($template =~ m/\G $START_OF_TEMPLATE_INHERITANCE \s* (.*?) \s* $END_TAG/gcxms)
-            {
-                my $name           = $1;
+            elsif ($template =~ m/\G $START_OF_TEMPLATE_INHERITANCE \s* (.*?) \s* $END_TAG/gcxms) {
+                my $name                      = $1;
                 my $end_of_inherited_template = $name;
 
-                if ($template
-                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_TEMPLATE_INHERITANCE $end_of_inherited_template $END_TAG ($TRAILING_SPACE)?/gcxms
+                if (
+                    $template =~ m/
+                    \G (.*?)
+                    ($LEADING_SPACE)?
+                    $START_TAG
+                    $END_OF_TEMPLATE_INHERITANCE
+                    $end_of_inherited_template
+                    $END_TAG
+                    ($TRAILING_SPACE)?
+                    /gcxms
                   )
                 {
                     $chunk .= $self->_parse_inherited_template($name, $1, $context);
@@ -156,13 +164,10 @@ sub _parse {
 
             # block
             elsif ($template =~ m/\G $START_OF_BLOCK \s* (.*?) \s* $END_TAG/gcxms) {
-                my $name           = $1;
+                my $name         = $1;
                 my $end_of_block = $name;
 
-                if ($template
-                    =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_BLOCK $end_of_block $END_TAG/gcxms
-                  )
-                {
+                if ($template =~ m/\G (.*?) ($LEADING_SPACE)? $START_TAG $END_OF_BLOCK $end_of_block $END_TAG/gcxms) {
                     $chunk .= $self->_parse_block($name, $1, $context, $override);
                 }
                 else {
@@ -239,7 +244,7 @@ sub _find_value {
     my $value = $context;
 
     foreach my $part (@parts) {
-        if ( ref $value eq "HASH"
+        if (   ref $value eq "HASH"
             && exists $value->{'_with'}
             && Scalar::Util::blessed($value->{'_with'})
             && $value->{'_with'}->can($part))
@@ -248,10 +253,10 @@ sub _find_value {
             next;
         }
 
-	if( ref $value eq "ARRAY" ) {
-		$value = $value->[$part];
-		next;
-	}
+        if (ref $value eq "ARRAY") {
+            $value = $value->[$part];
+            next;
+        }
 
         if (   exists $value->{'.'}
             && Scalar::Util::blessed($value->{'.'})
@@ -262,8 +267,7 @@ sub _find_value {
         }
 
         return undef if $self->_is_empty($value, $part);
-        $value =
-          Scalar::Util::blessed($value) ? $value->$part : $value->{$part};
+        $value = Scalar::Util::blessed($value) ? $value->$part : $value->{$part};
     }
 
     return \$value;
@@ -329,8 +333,7 @@ sub _parse_section {
     }
     elsif (ref $value eq 'CODE') {
         $template = $self->_parse($template, $context);
-        $output
-          .= $self->_parse($value->($self, $template, $context), $context);
+        $output .= $self->_parse($value->($self, $template, $context), $context);
     }
     elsif (ref $value) {
         $output .= $self->_parse($template, {%$context, _with => $value});
@@ -404,18 +407,20 @@ sub _parse_block {
 
     # get block content from override
     my $content;
-   
+
     # first, see if we can find any starting block with this name in the override
     if ($override =~ m/ $START_OF_BLOCK \s* $name \s* $END_TAG/gcxms) {
+
         # get the content of the override block and make sure there's a corresponding end-block tag for it!
-        if ($override =~ m/ (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gcxms){
+        if ($override =~ m/ (.*) $START_TAG $END_OF_BLOCK \s* $name \s* $END_TAG/gcxms) {
             my $content = $1;
             return $self->_parse($content, $context);
-        } else {
+        }
+        else {
             Carp::croak("Block's '$name' end not found");
-        }               
+        }
     }
-   
+
     return $self->_parse($template, $context);
 }
 
@@ -424,8 +429,7 @@ sub _slurp_template {
     my ($template) = @_;
 
     my $path =
-      defined $self->templates_path
-      && !(File::Spec->file_name_is_absolute($template))
+      defined $self->templates_path && !(File::Spec->file_name_is_absolute($template))
       ? File::Spec->catfile($self->templates_path, $template)
       : $template;
 
