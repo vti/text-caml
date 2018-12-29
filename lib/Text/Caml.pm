@@ -745,6 +745,8 @@ Fernando Oliveira
 
 Shoichi Kaji (skaji)
 
+Igor Lobanov
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2011-2017, Viacheslav Tykhanovskyi
